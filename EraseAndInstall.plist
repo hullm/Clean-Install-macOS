@@ -19,7 +19,7 @@
 	<key>display_name</key>
 	<string>Erase All Contents and Settings</string>
 	<key>icon_name</key>
-	<string>Settings.png</string>
+	<string>EraseAndInstall.png</string>
 	<key>installcheck_script</key>
 	<string></string>
 	<key>installer_type</key>
