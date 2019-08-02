@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>OnDemand</key>
+	<true/>
+	<key>autoremove</key>
+	<false/>
+	<key>catalogs</key>
+	<array>
+		<string>desktops</string>
+	</array>
+	<key>category</key>
+	<string>Utility</string>
+	<key>description</key>
+	<string>WARNING: This will erase everything on the computer and install a clean copy of macOS.  This will only run if the admin account is signed in.</string>
+	<key>developer</key>
+	<string>Matthew Hull</string>
+	<key>display_name</key>
+	<string>Erase All Contents and Settings</string>
+	<key>icon_name</key>
+	<string>LGSettings.png</string>
+	<key>installcheck_script</key>
+	<string></string>
+	<key>installer_type</key>
+	<string>nopkg</string>
+	<key>minimum_os_version</key>
+	<string>10.10.0</string>
+	<key>name</key>
+	<string>Erase All Contents and Settings</string>
+	<key>postinstall_script</key>
+	<string>#!/bin/bash
+
+# Initialize varables
+latestVersion="10.14.6"
+adminSignedIn="False"
+nonAdminSignedIn="False"
+onlyAdminSignedIn="False"
+
+downloadInstaller(){
+
+    # Downloads the last version of the macOS installer form the inventory site
+
+    # Prevent the comptuer from sleeting
+    caffeinate -dis &amp;
+    caffeinatePID=$!
+
+    # Get the installer from the server
+    curl -O https://www.domain.com/macOS.dmg
+
+    # Copy the installer to the applications folder
+    hdiutil mount macOS.dmg 
+    cp -R "/Volumes/Install macOS Mojave/Install macOS Mojave.app" /Applications
+    hdiutil detach /Volumes/Install\ macOS\ Mojave/
+    rm macOS.dmg
+
+    # Allow the computer to sleep again
+    kill "${caffeinatePID}"
+    echo "macOS installer downloaded"
+}
+
+# Loop through each logged in user to see if the admin is currently logged in
+for user in $(who | awk '{ print $1 }') ; do
+    if [[ "${user}" == "admin" ]] ; then
+		adminSignedIn="True"
+    else
+        nonAdminSignedIn="True"
+    fi
+done
+
+if $adminSignedIn; then
+    if !($nonAdminSignedIn); then
+        onlyAdminSignedIn="True"
+    fi
+fi
+
+if $onlyAdminSignedIn; then
+
+    # Check to see if there is more than 10GB free
+    freeSpace=$(df -k / | tail -n +2 | awk '{ print $4 }')                     
+    if [[ ${freeSpace%.*} -ge 10000000 ]]; then
+        echo "More that 10GB available"
+    else
+        echo "Not enough disk space to download macOS installer"
+        exit 0
+    fi
+
+    # See if they already have a copy downloaded and if it's the correct version
+    if (test -e "/Applications/Install macOS Mojave.app"); then
+        installerVersion=$(defaults read /Applications/Install\ macOS\ Mojave.app/Contents/SharedSupport/InstallInfo.plist | grep version | tail -n1 | awk -F\" '{print $2}')
+
+        if [[ $latestVersion == $installerVersion ]]; then
+            echo "macOS installer already downloaded"
+        else
+            echo "Deleted old macOS instller"
+            rm -rfd "/Applications/Install\ macOS\ Mojave.app"
+            downloadInstaller
+        fi
+    else
+        downloadInstaller
+    fi
+
+    /Applications/Install\ macOS\ Mojave.app/Contents/Resources/startosinstall --agreetolicense --nointeraction --eraseinstall
+
+fi
+
+echo "Unable to install macOS"</string>
+	<key>preinstall_alert</key>
+	<dict>
+		<key>alert_detail</key>
+		<string>THIS WILL DELETE EVERYTHING ON YOUR COMPUTER!!!  This will only run if the admin account is signed in.</string>
+		<key>alert_title</key>
+		<string>WARNING</string>
+		<key>cancel_label</key>
+		<string>Cancel</string>
+		<key>ok_label</key>
+		<string>I Understand</string>
+	</dict>
+	<key>unattended_install</key>
+	<true/>
+	<key>uninstall_method</key>
+	<string>uninstall_script</string>
+	<key>uninstall_script</key>
+	<string></string>
+	<key>uninstallable</key>
+	<true/>
+	<key>version</key>
+	<string>1.0</string>
+</dict>
+</plist>
