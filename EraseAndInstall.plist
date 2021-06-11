@@ -13,11 +13,9 @@
 	<key>category</key>
 	<string>Utility</string>
 	<key>description</key>
-	<string>WARNING: This will erase everything on the computer and install a clean copy of macOS.  This will only run if the admin account is signed in.
-&lt;br /&gt;
-&lt;img src="https://updates.lkgeorge.org/images/LakeGeorgeSettings.png" /&gt;</string>
+	<string>WARNING: This will erase everything on the computer and install a clean copy of macOS.  This will only run if the admin account is signed in.</string>
 	<key>developer</key>
-	<string>Lake George</string>
+	<string>Matt Hull</string>
 	<key>display_name</key>
 	<string>Erase All Contents and Settings</string>
 	<key>icon_name</key>
