@@ -13,15 +13,15 @@
 	<key>category</key>
 	<string>Utility</string>
 	<key>description</key>
-	<string>WARNING: This will erase everything on the computer and install a clean copy of macOS.  This will only run if the admin account is signed in.</string>
+	<string>WARNING: This will erase everything on the computer and install a clean copy of macOS.  This will only run if the admin account is signed in.
+&lt;br /&gt;
+&lt;img src="https://updates.lkgeorge.org/images/LakeGeorgeSettings.png" /&gt;</string>
 	<key>developer</key>
-	<string>Matthew Hull</string>
+	<string>Lake George</string>
 	<key>display_name</key>
 	<string>Erase All Contents and Settings</string>
 	<key>icon_name</key>
-	<string>EraseAndInstall.png</string>
-	<key>installcheck_script</key>
-	<string></string>
+	<string>LGSettings.png</string>
 	<key>installer_type</key>
 	<string>nopkg</string>
 	<key>minimum_os_version</key>
@@ -32,10 +32,11 @@
 	<string>#!/bin/bash
 
 # Initialize varables
-latestVersion="10.14.6"
+latestVersion="11.4"
 adminSignedIn="False"
 nonAdminSignedIn="False"
 onlyAdminSignedIn="False"
+cd ~
 
 downloadInstaller(){
 
@@ -50,8 +51,8 @@ downloadInstaller(){
 
     # Copy the installer to the applications folder
     hdiutil mount macOS.dmg 
-    cp -R "/Volumes/Install macOS Mojave/Install macOS Mojave.app" /Applications
-    hdiutil detach /Volumes/Install\ macOS\ Mojave/
+    cp -R "/Volumes/Install macOS Big Sur/Install macOS Big Sur.app" /Applications
+    hdiutil detach /Volumes/Install\ macOS\ Big Sur/
     rm macOS.dmg
 
     # Allow the computer to sleep again
@@ -86,21 +87,21 @@ if $onlyAdminSignedIn; then
     fi
 
     # See if they already have a copy downloaded and if it's the correct version
-    if (test -e "/Applications/Install macOS Mojave.app"); then
-        installerVersion=$(defaults read /Applications/Install\ macOS\ Mojave.app/Contents/SharedSupport/InstallInfo.plist | grep version | tail -n1 | awk -F\" '{print $2}')
+    if (test -e "/Applications/Install macOS Big Sur.app"); then
+        installerVersion="$(defaults read /Applications/Install\ macOS\ Big\ Sur.app/Contents/Info.plist | grep DTPlatformVersion | tail -n1 | awk -F\" '{print $2}')"
 
         if [[ $latestVersion == $installerVersion ]]; then
             echo "macOS installer already downloaded"
         else
             echo "Deleted old macOS instller"
-            rm -rfd "/Applications/Install\ macOS\ Mojave.app"
+            rm -rfd "/Applications/Install\ macOS\ Big\ Sur.app"
             downloadInstaller
         fi
     else
         downloadInstaller
     fi
 
-    /Applications/Install\ macOS\ Mojave.app/Contents/Resources/startosinstall --agreetolicense --nointeraction --eraseinstall
+    /Applications/Install\ macOS\ Big\ Sur.app/Contents/Resources/startosinstall --agreetolicense --nointeraction --eraseinstall
 
 fi
 

@@ -4,26 +4,26 @@
 # accessible with http.  Update the URL below with your URL.
 
 # Initialize varables
-latestVersion="10.14.6"
+latestVersion="11.4"
 adminSignedIn="False"
 nonAdminSignedIn="False"
 onlyAdminSignedIn="False"
 
 downloadInstaller(){
 
-    # Downloads the last version of the macOS installer from your server
+    # Downloads the last version of the macOS installer form the inventory site
 
-    # Prevent the computer from sleeping
+    # Prevent the comptuer from sleeting
     caffeinate -dis &
     caffeinatePID=$!
 
     # Get the installer from the server
     curl -O https://www.domain.com/macOS.dmg
-
+    
     # Copy the installer to the applications folder
     hdiutil mount macOS.dmg 
-    cp -R "/Volumes/Install macOS Mojave/Install macOS Mojave.app" /Applications
-    hdiutil detach /Volumes/Install\ macOS\ Mojave/
+    cp -R "/Volumes/Install macOS Big Sur/Install macOS Big Sur.app" /Applications
+    hdiutil detach /Volumes/Install\ macOS\ Big Sur/
     rm macOS.dmg
 
     # Allow the computer to sleep again
@@ -58,14 +58,14 @@ if $onlyAdminSignedIn; then
     fi
 
     # See if they already have a copy downloaded and if it's the correct version
-    if (test -e "/Applications/Install macOS Mojave.app"); then
-        installerVersion=$(defaults read /Applications/Install\ macOS\ Mojave.app/Contents/SharedSupport/InstallInfo.plist | grep version | tail -n1 | awk -F\" '{print $2}')
+    if (test -e "/Applications/Install macOS Big Sur.app"); then
+        installerVersion="$(defaults read /Applications/Install\ macOS\ Big\ Sur.app/Contents/Info.plist | grep DTPlatformVersion | tail -n1 | awk -F\" '{print $2}')"
 
         if [[ $latestVersion == $installerVersion ]]; then
             echo "macOS installer already downloaded"
         else
             echo "Deleted old macOS instller"
-            rm -rfd "/Applications/Install\ macOS\ Mojave.app"
+            rm -rfd "/Applications/Install\ macOS\ Big\ Sur.app"
             downloadInstaller
         fi
     else
@@ -73,7 +73,7 @@ if $onlyAdminSignedIn; then
     fi
     
     # Uncomment the line below to make the script work.  This will wipe your drive!
-    # /Applications/Install\ macOS\ Mojave.app/Contents/Resources/startosinstall --agreetolicense --nointeraction --eraseinstall
+    #/Applications/Install\ macOS\ Big\ Sur.app/Contents/Resources/startosinstall --agreetolicense --nointeraction --eraseinstall
 
 fi
 

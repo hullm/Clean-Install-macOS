@@ -1,26 +1,26 @@
 #!/bin/bash
 
 # Initialize varables
-latestVersion="10.14.6"
-uSBDrive="Data"
+latestVersion="11.4"
 adminSignedIn="False"
 nonAdminSignedIn="False"
 onlyAdminSignedIn="False"
 
 downloadInstaller(){
 
-    # Downloads the last version of the macOS installer from a USB drive
+    # Downloads the last version of the macOS installer form the inventory site
+    echo "Copying macOS installer to applications folder"
 
     # Prevent the comptuer from sleeting
     caffeinate -dis &
     caffeinatePID=$!
 
     # Copy the installer to the applications folder
-    cp -R "/Volumes/$uSBDrive/Install macOS Mojave.app" /Applications
+    cp -R "/Volumes/Hive/Install macOS Big Sur.app" /Applications
 
     # Allow the computer to sleep again
     kill "${caffeinatePID}"
-    echo "macOS installer downloaded"
+    echo "macOS installer copied"
 }
 
 # Loop through each logged in user to see if the admin is currently logged in
@@ -41,7 +41,7 @@ fi
 if $onlyAdminSignedIn; then
 
     # Check to see if there is more than 10GB free
-    freeSpace=$(df -k / | tail -n +2 | awk '{ print $4 }')
+    freeSpace=$(df -k / | tail -n +2 | awk '{ print $4 }')                     
     if [[ ${freeSpace%.*} -ge 10000000 ]]; then
         echo "More that 10GB available"
     else
@@ -50,14 +50,14 @@ if $onlyAdminSignedIn; then
     fi
 
     # See if they already have a copy downloaded and if it's the correct version
-    if (test -e "/Applications/Install macOS Mojave.app"); then
-        installerVersion=$(defaults read /Applications/Install\ macOS\ Mojave.app/Contents/SharedSupport/InstallInfo.plist | grep version | tail -n1 | awk -F\" '{print $2}')
+    if (test -e "/Applications/Install macOS Big Sur.app"); then
+        installerVersion=$(defaults read /Applications/Install\ macOS\ Big\ Sur.app/Contents/Info.plist| grep DTPlatformVersion | tail -n1 | awk -F\" '{print $2}')
 
-        if [[ $latestVersion == $installerVersion ]]; then
+        if [[ "$latestVersion" == "$installerVersion" ]]; then
             echo "macOS installer already downloaded"
         else
             echo "Deleted old macOS instller"
-            rm -rfd "/Applications/Install macOS Mojave.app"
+            rm -rfd "/Applications/Install macOS Big Sur.app"
             downloadInstaller
         fi
     else
@@ -65,7 +65,7 @@ if $onlyAdminSignedIn; then
     fi
 
     # Uncomment the line below to make the script work.  This will wipe your drive!
-    # /Applications/Install\ macOS\ Mojave.app/Contents/Resources/startosinstall --agreetolicense --nointeraction --eraseinstall
+    # /Applications/Install\ macOS\ Big\ Sur.app/Contents/Resources/startosinstall --agreetolicense --nointeraction --eraseinstall
 
 fi
 
