@@ -4,7 +4,7 @@
 # accessible with http.  Update the URL below with your URL.
 
 # Initialize varables
-latestVersion="11.4"
+latestVersion="11.5"
 adminSignedIn="False"
 nonAdminSignedIn="False"
 onlyAdminSignedIn="False"
